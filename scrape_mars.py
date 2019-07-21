@@ -102,8 +102,6 @@ def scrape_mars_weather():
         # Initialize browser 
         browser = init_browser()
 
-        #browser.is_element_present_by_css("div", wait_time=1)
-
         # Visit Mars Weather Twitter through splinter module
         weather_url = 'https://twitter.com/marswxreport?lang=en'
         browser.visit(weather_url)
@@ -143,24 +141,27 @@ def scrape_mars_facts():
     mars_facts_url = 'http://space-facts.com/mars/'
 
     # Use Panda's `read_html` to parse the url
-    mars_facts = pd.read_html(mars_facts_url)
+    tables = pd.read_html(mars_facts_url)
 
     # Find the mars facts DataFrame in the list of DataFrames as assign it to `mars_df`
-    facts_df = mars_facts[1]
+    df = tables[1]
 
-    # Assign the columns `['Description', 'Mars Facts']`
-    facts_df.columns = ['Description','Mars Facts']
+    # Assign the columns `['Description', 'Mars Fact']`
+    df.columns = ['Description','Mars Fact']
+
+    # Set the index to the `Description` column without row indexing
+    df.set_index('Description', inplace=True)
 
     # Save html code to folder Assets
-    facts_html = facts_df.to_html()
+    mars_facts = df.to_html()
 
     # remove new lines - \n
-    facts_html.replace("\n","")
+    mars_facts.replace("\n","")
 
-    #data = facts_df.to_dict(orient='records')    
+    df.to_html('mars_facts.html')    
 
     # Dictionary entry from MARS FACTS
-    mars_info['mars_facts'] = data
+    mars_info['mars_facts'] = mars_facts
 
     return mars_info
 
